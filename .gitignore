@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# pocketbase (binary and local data; migrations are committed)
+/pocketbase/pocketbase
+/pocketbase/pb_data/
+
+# impeccable 검증 캡처(다시 만들 수 있음)
+/.impeccable/review/

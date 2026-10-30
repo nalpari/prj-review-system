@@ -6,10 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "pb:serve": "cd pocketbase && ./pocketbase serve --http=127.0.0.1:8090",
+    "pb:superuser": "cd pocketbase && ./pocketbase superuser upsert ${PB_SUPERUSER_EMAIL:-superuser@redline.local} ${PB_SUPERUSER_PASSWORD:-redline-superuser-1}",
+    "pb:seed": "node scripts/seed.mjs",
+    "test": "node --test src/lib/*.test.ts",
+    "test:rules": "node --test scripts/rules.test.mjs"
   },
   "dependencies": {
+    "lucide-react": "^1.65.0",
     "next": "16.4.3",
+    "pocketbase": "^0.28.1",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
