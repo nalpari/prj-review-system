@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><title>Redline</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:#17181A;color:#E6E6E6;font:13px/1.5 "IBM Plex Sans KR",sans-serif}
+.m,.mono{font-family:"JetBrains Mono",monospace}
+.mu{color:#A3A6AD}
+header{height:44px;display:flex;align-items:center;gap:16px;padding:0 16px;background:#1E1F22;border-bottom:1px solid #2E3034}
+.logo{font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px}
+.logo i{width:12px;height:12px;background:#E5566F;display:block}
+.team{border:1px solid #2E3034;padding:3px 10px;border-radius:4px}
+.search{margin-left:8px;width:340px;border:1px solid #2E3034;background:#17181A;padding:4px 10px;border-radius:4px;color:#A3A6AD}
+.btn{margin-left:auto;background:#fff;color:#000;font-weight:600;padding:5px 14px;border-radius:4px}
+main{display:flex;height:856px}
+.l{width:320px;background:#1E1F22;border-right:1px solid #2E3034}
+.c{flex:1;min-width:0;background:#17181A}
+.r{width:380px;background:#1E1F22;border-left:1px solid #2E3034;padding:16px;display:flex;flex-direction:column}
+.ph{padding:10px 14px;border-bottom:1px solid #2E3034;font-weight:600;display:flex;justify-content:space-between}
+.row{padding:10px 14px;border-bottom:1px solid #2E3034}
+.row.sel{background:#2A2C30;box-shadow:inset 2px 0 0 #7CC4FA}
+.row .a{font-family:"JetBrains Mono",monospace;font-size:12px;white-space:nowrap}
+.row .b{display:flex;justify-content:space-between;font-size:12px;margin-top:3px}
+.s{font-weight:500}.run{color:#7CC4FA}.ok{color:#5FC38A}.fail{color:#E5566F}.wait{color:#F2C14E}.can{color:#A3A6AD}
+.file{padding:8px 16px;border-bottom:1px solid #2E3034;font-family:"JetBrains Mono",monospace;font-size:12px;display:flex;justify-content:space-between}
+.ln{display:flex;font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:22px;white-space:pre}
+.ln b{width:44px;text-align:right;padding-right:12px;color:#6B6E75;font-weight:400;flex:none}
+.ln s{width:18px;text-decoration:none;color:#A3A6AD;flex:none}
+.ln.add{background:rgba(95,195,138,.12)}.ln.del{background:rgba(229,86,111,.12)}
+.ln.hit{background:rgba(229,86,111,.12)}
+.iss{margin:6px 16px 6px 62px;border:1px solid #E5566F;border-left-width:3px;background:#1E1F22;padding:8px 12px;border-radius:3px}
+.tag{color:#E5566F;font-weight:600}
+h2{font-size:15px;font-weight:600;margin:6px 0}
+.code{background:#17181A;border:1px solid #2E3034;padding:8px 10px;font-family:"JetBrains Mono",monospace;font-size:12px;line-height:20px;white-space:pre;margin:6px 0 12px}
+.seg{display:flex;border:1px solid #2E3034;border-radius:4px;overflow:hidden;margin:6px 0 14px}
+.seg span{flex:1;text-align:center;padding:5px 0;border-right:1px solid #2E3034}
+.seg span:last-child{border:0}.seg .on{background:#2E3034;color:#fff;font-weight:600}
+.cm{display:flex;gap:10px;margin-top:10px}
+.av{width:24px;height:24px;border-radius:50%;background:#2E3034;display:grid;place-items:center;font-size:11px;flex:none}
+.del-btn{margin-top:auto;border:1px solid #E5566F;color:#E5566F;text-align:center;padding:7px;border-radius:4px;font-weight:500}
+.note{font-size:11px;color:#A3A6AD;margin-top:10px;text-align:center}
+</style></head><body>
+<header><div class="logo"><i></i>Redline</div><div class="team">결제팀 ▾</div><div class="search">리뷰·파일 검색</div><div class="btn">새 리뷰 요청</div></header>
+<main>
+<section class="l"><div class="ph"><span>리뷰 요청</span><span class="mu m">8</span></div>
+<div class="row sel"><div class="a">feature/refund-retry → main</div><div class="b"><span class="mu">payments-api · Claude</span><span class="s run m">실행 중 1분 12초</span></div></div>
+<div class="row"><div class="a">fix/ledger-rounding → main</div><div class="b"><span class="mu">ledger-core · Codex</span><span class="s ok">완료 · 12분 전</span></div></div>
+<div class="row"><div class="a">feature/webhook-sign → main</div><div class="b"><span class="mu">payments-api · Claude</span><span class="s fail">실패 <u>재시도</u></span></div></div>
+<div class="row"><div class="a">chore/bump-deps → main</div><div class="b"><span class="mu">billing-web · Codex</span><span class="s wait">대기 · 방금</span></div></div>
+<div class="row"><div class="a">feature/settle-batch → develop</div><div class="b"><span class="mu">settlement · Claude</span><span class="s ok">완료 · 1시간 전</span></div></div>
+<div class="row"><div class="a">fix/idempotency-key → main</div><div class="b"><span class="mu">payments-api · Codex</span><span class="s can">취소 · 3시간 전</span></div></div>
+<div class="row"><div class="a">refactor/pg-adapter → main</div><div class="b"><span class="mu">pg-gateway · Claude</span><span class="s ok">완료 · 어제</span></div></div>
+<div class="row"><div class="a">feature/fx-quote → main</div><div class="b"><span class="mu">ledger-core · Claude</span><span class="s ok">완료 · 2일 전</span></div></div>
+</section>
+<section class="c"><div class="file"><span>src/refund/retry.ts</span><span class="mu">+14 −6 · 이슈 3</span></div>
+<div class="ln"><b>42</b><s> </s>export async function retryRefund(id: string, max = 3) {</div>
+<div class="ln"><b>43</b><s> </s>  const refund = await repo.find(id);</div>
+<div class="ln del"><b>44</b><s>-</s>  for (let i = 0; i &lt; 5; i++) {</div>
+<div class="ln add"><b>44</b><s>+</s>  for (let attempt = 0; attempt &lt; max; attempt++) {</div>
+<div class="ln"><b>45</b><s> </s>    try {</div>
+<div class="ln del"><b>46</b><s>-</s>      return await gateway.refund(refund.paymentId, refund.amount);</div>
+<div class="ln add"><b>46</b><s>+</s>      const res = await gateway.refund(refund.paymentId, refund.amount);</div>
+<div class="ln add"><b>47</b><s>+</s>      await repo.markDone(id, res.txId);</div>
+<div class="ln hit add"><b>48</b><s>+</s>      await sleep(attempt * 200);</div>
+<div class="iss"><span class="tag">치명</span> <span class="mu">· Claude</span><div style="font-weight:600;margin-top:2px">성공 후에도 대기하고 멱등 키 없이 재시도하여 이중 환불 가능</div></div>
+<div class="ln add"><b>49</b><s>+</s>      return res;</div>
+<div class="ln"><b>50</b><s> </s>    } catch (e) {</div>
+<div class="ln add"><b>51</b><s>+</s>      logger.warn({ id, attempt, err: String(e) });</div>
+<div class="ln add"><b>52</b><s>+</s>      if (!isRetryable(e)) throw e;</div>
+<div class="ln"><b>53</b><s> </s>    }</div>
+<div class="ln"><b>54</b><s> </s>  }</div>
+<div class="ln del"><b>55</b><s>-</s>  throw new Error("refund failed");</div>
+<div class="ln add"><b>55</b><s>+</s>  await repo.markFailed(id);</div>
+<div class="ln add"><b>56</b><s>+</s>  throw new RefundError(id, max);</div>
+<div class="ln"><b>57</b><s> </s>}</div>
+<div class="ln"><b>58</b><s> </s></div>
+<div class="ln"><b>59</b><s> </s>function isRetryable(e: unknown): boolean {</div>
+<div class="ln"><b>60</b><s> </s>  return e instanceof GatewayError &amp;&amp; e.status &gt;= 500;</div>
+<div class="ln"><b>61</b><s> </s>}</div>
+</section>
+<aside class="r">
+<div><span class="tag">치명</span> <span class="mu m">retry.ts:48</span></div>
+<h2>성공 후에도 대기하고 멱등 키 없이 재시도하여 이중 환불 가능</h2>
+<p class="mu">markDone 이후 sleep이 실행되어 응답이 지연되고, 타임아웃 시 호출자가 같은 환불을 다시 요청할 수 있습니다. gateway.refund에 멱등 키가 없어 중복 처리됩니다.</p>
+<div class="code">- await sleep(attempt * 200);
++ await gateway.refund(p, a, { idempotencyKey: id });</div>
+<div class="mu" style="font-size:12px">상태</div>
+<div class="seg"><span class="on">미확인</span><span>확인</span><span>해결</span><span>보류</span></div>
+<div class="cm"><div class="av">김</div><div><b>김도윤</b> <span class="mu">14:02</span><div>멱등 키는 paymentId로 충분할까요? 재환불 케이스가 있습니다.</div></div></div>
+<div class="cm"><div class="av">박</div><div><b>박서연</b> <span class="mu">14:20</span><div>부분 환불이 있어 refund.id 기준이 맞습니다. 패치 반영해 주세요.</div></div></div>
+<div class="del-btn">리뷰 데이터 삭제</div>
+<div class="note">AI 리뷰는 참고용이며 병합·배포 승인이 아닙니다.</div>
+</aside>
+</main></body></html>

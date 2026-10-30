@@ -1,0 +1,36 @@
+{
+  "buildPath": "comp",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-10-30T07:15:01.272Z",
+        "reason": "agent: decision-round sketch (subagent-written throwaway mock), not shipped UI; the built pages pass the detector"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "17px",
+        "files": [
+          "src/components/wordmark.tsx"
+        ],
+        "createdAt": "2026-10-30T07:21:25.318Z",
+        "reason": "agent: 17px is the Redline logotype size, a brand mark rather than a text-ramp step"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-10-30T07:22:11.814Z",
+        "reason": "agent: decision-round sketch (throwaway mock with its own preview fonts), not shipped UI"
+      }
+    ]
+  }
+}

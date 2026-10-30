@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Redline - 리뷰 상세</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:#F3F4F1;color:#15171A;font:400 14px/1.5 "IBM Plex Sans KR",sans-serif;display:flex}
+.mono{font-family:"JetBrains Mono",monospace}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+aside{width:232px;padding:24px 16px;flex:none}
+.logo{font-weight:700;font-size:20px;letter-spacing:-.01em;padding:0 10px;display:flex;align-items:center;gap:8px}
+.logo i{width:18px;height:4px;background:#15171A;display:block}
+.team{margin:20px 0 16px;padding:8px 10px;border:1px solid #E3E5E0;background:#fff;border-radius:6px;display:flex;justify-content:space-between;font-weight:500}
+.team span{color:#5E6259;font-weight:400;font-size:12px}
+nav a{display:block;padding:7px 10px;border-radius:6px;color:#5E6259;margin-bottom:2px}
+nav a.on{background:#E3E5E0;color:#15171A;font-weight:600}
+.grp{margin:24px 10px 8px;font-size:12px;color:#5E6259;font-weight:500}
+.repo{display:flex;align-items:center;gap:10px;padding:6px 10px}
+.repo b{width:18px;height:18px;border-radius:50%;flex:none}
+main{flex:1;padding:28px 40px 0 24px;min-width:0}
+.head{display:flex;justify-content:space-between;align-items:flex-start}
+h1{font:600 24px/1.3 "JetBrains Mono",monospace;letter-spacing:-.02em}
+.sub{color:#5E6259;margin-top:4px}
+.sub .mono{font-size:13px}
+.btns{display:flex;gap:8px}
+.btn{padding:8px 16px;border-radius:6px;font-weight:600;border:1px solid #15171A;background:#15171A;color:#fff}
+.btn.s{background:#fff;color:#15171A;border-color:#E3E5E0}
+.map{margin-top:16px;height:220px;background:#fff;border:1px solid #E3E5E0;border-radius:8px}
+.map svg{display:block}
+.cols{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:16px}
+.card{background:#fff;border:1px solid #E3E5E0;border-radius:8px}
+.ch{display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #E3E5E0;font-weight:600}
+.ch span{font-weight:400;color:#5E6259;font-size:13px}
+.iss{display:grid;grid-template-columns:48px 1fr 56px;gap:14px;align-items:center;padding:11px 16px;border-bottom:1px solid #E3E5E0}
+.iss:last-child{border:0}
+.pill{font-size:12px;font-weight:600;text-align:center;border-radius:4px;padding:1px 0}
+.p1{background:#ffedea;color:#831c1e}.p2{background:#fff3d6;color:#7a4b00}.p3{background:#ecedea;color:#5E6259}
+.iss .t{font-weight:500}.iss .f{font-size:12px;color:#5E6259;margin-top:1px}
+.st{color:#5E6259;font-size:13px}.st.u{color:#15171A;font-weight:600}
+.fr{display:grid;grid-template-columns:8px 1fr auto;gap:12px;align-items:center;height:44px;padding:0 16px;border-bottom:1px solid #E3E5E0}
+.fr i{display:block;width:8px;background:#00A84D;align-self:center;border-radius:1px}
+.fr .n{font-size:12px;word-break:break-all;line-height:1.3}
+.fr .c{font-size:12px;color:#5E6259;white-space:nowrap}
+.cap{padding:12px 16px;font-size:13px}
+.bar{height:4px;background:#E3E5E0;border-radius:2px;margin-top:8px}
+.bar u{display:block;height:4px;width:38%;background:#15171A;border-radius:2px}
+.note{margin-top:12px;color:#5E6259;font-size:13px}
+</style></head><body>
+<aside>
+  <div class="logo"><i></i>Redline</div>
+  <div class="team"><span style="color:#15171A;font-size:14px;font-weight:500">결제팀</span><span>전환</span></div>
+  <nav><a>대시보드</a><a class="on">리뷰 요청</a><a>저장소</a><a>팀·권한</a><a>데이터 보존</a></nav>
+  <div class="grp">저장소</div>
+  <div class="repo"><b style="background:#00A84D"></b>payments-api</div>
+  <div class="repo"><b style="background:#0065B3"></b>web-console</div>
+  <div class="repo"><b style="background:#EF7C1C"></b>ledger-batch</div>
+</aside>
+<main>
+  <div class="head">
+    <div><h1>feature/refund-retry → main</h1>
+      <div class="sub"><span class="mono">payments-api</span> · 커밋 6개 · 모델 Claude · 완료 (2분 41초)</div></div>
+    <div class="btns"><div class="btn">다시 실행</div><div class="btn s">새 리뷰 요청</div></div>
+  </div>
+  <div class="map">
+  <svg width="1166" height="218" viewBox="0 0 1166 218" font-family="IBM Plex Sans KR">
+    <line x1="24" y1="176" x2="1140" y2="176" stroke="#8A8E86" stroke-width="8" stroke-linecap="round"/>
+    <path d="M70 176 L124 64 H936" fill="none" stroke="#00A84D" stroke-width="8" stroke-linejoin="round"/>
+    <text x="24" y="206" font-size="13" font-weight="600" fill="#5E6259" class="mono">main</text>
+    <text x="140" y="40" font-size="13" font-weight="600" fill="#00A84D" font-family="JetBrains Mono">feature/refund-retry</text>
+    <text x="1140" y="206" font-size="12" fill="#5E6259" text-anchor="end">대상 브랜치 · 분기점 e91b7d2</text>
+    <circle cx="70" cy="176" r="11" fill="#fff" stroke="#15171A" stroke-width="5"/>
+    <g font-size="12" text-anchor="middle">
+      <g><circle cx="220" cy="64" r="10" fill="#fff" stroke="#00A84D" stroke-width="4"/><text x="220" y="100" font-family="JetBrains Mono" font-weight="500">a3f09c1</text><text x="220" y="118" fill="#5E6259">환불 재시도 큐 추가</text></g>
+      <g><circle cx="350" cy="64" r="10" fill="#00A84D" stroke="#00A84D" stroke-width="4"/><text x="350" y="100" font-family="JetBrains Mono" font-weight="500">7be21d4</text><text x="350" y="118" fill="#5E6259">백오프 정책 도입</text></g>
+      <g><circle cx="480" cy="64" r="10" fill="#fff" stroke="#00A84D" stroke-width="4"/><text x="480" y="100" font-family="JetBrains Mono" font-weight="500">c04a8f6</text><text x="480" y="118" fill="#5E6259">로깅 포맷 정리</text></g>
+      <g><circle cx="610" cy="64" r="10" fill="#00A84D" stroke="#00A84D" stroke-width="4"/><text x="610" y="100" font-family="JetBrains Mono" font-weight="500">1d92e5b</text><text x="610" y="118" fill="#5E6259">멱등 키 검증 추가</text></g>
+      <g><circle cx="740" cy="64" r="10" fill="#00A84D" stroke="#00A84D" stroke-width="4"/><text x="740" y="100" font-family="JetBrains Mono" font-weight="500">58f3b07</text><text x="740" y="118" fill="#5E6259">PG 타임아웃 처리</text></g>
+      <g><circle cx="870" cy="64" r="10" fill="#fff" stroke="#00A84D" stroke-width="4"/><text x="870" y="100" font-family="JetBrains Mono" font-weight="500">f2a6c93</text><text x="870" y="118" fill="#5E6259">테스트 보강</text></g>
+    </g>
+    <rect x="936" y="44" width="150" height="40" rx="6" fill="#fff" stroke="#00A84D" stroke-width="2"/>
+    <circle cx="954" cy="64" r="5" fill="#00A84D"/>
+    <text x="968" y="69" font-size="13" font-weight="600">완료 · 2분 41초</text>
+    <circle cx="640" cy="160" r="0"/>
+    <circle cx="840" cy="150" r="5" fill="#00A84D"/><text x="852" y="154" font-size="12" fill="#5E6259">컨텍스트로 선택된 커밋 3개</text>
+    <circle cx="1040" cy="150" r="5" fill="#fff" stroke="#00A84D" stroke-width="2"/><text x="1052" y="154" font-size="12" fill="#5E6259">미선택</text>
+  </svg>
+  </div>
+  <div class="cols">
+    <div class="card">
+      <div class="ch">발견된 이슈 <span>치명 1 · 경고 4 · 제안 7</span></div>
+      <div class="iss"><div class="pill p1">치명</div><div><div class="t">재시도 시 멱등 키가 재사용되지 않아 이중 환불 가능</div><div class="f mono">src/refund/retry.ts:48</div></div><div class="st u">미확인</div></div>
+      <div class="iss"><div class="pill p2">경고</div><div><div class="t">백오프 상한이 없어 큐 적체 시 무한 대기</div><div class="f mono">src/refund/backoff.ts:21</div></div><div class="st">확인</div></div>
+      <div class="iss"><div class="pill p2">경고</div><div><div class="t">PG 타임아웃 예외를 삼키고 성공으로 기록</div><div class="f mono">src/pg/client.ts:112</div></div><div class="st u">미확인</div></div>
+      <div class="iss"><div class="pill p2">경고</div><div><div class="t">재시도 횟수 설정값 검증 누락</div><div class="f mono">src/config/refund.ts:9</div></div><div class="st">보류</div></div>
+      <div class="iss"><div class="pill p3">제안</div><div><div class="t">로그에 환불 금액 대신 요청 ID 사용 권장</div><div class="f mono">src/refund/logger.ts:33</div></div><div class="st">해결</div></div>
+      <div class="iss"><div class="pill p3">제안</div><div><div class="t">재시도 단위 테스트에 경계값 케이스 추가</div><div class="f mono">test/refund/retry.test.ts:76</div></div><div class="st">미확인</div></div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ch">변경 파일 <span class="num">5개</span></div>
+        <div class="fr"><i style="height:36px"></i><div class="n mono">src/refund/retry.ts</div><div class="c num mono">+312 −48</div></div>
+        <div class="fr"><i style="height:26px"></i><div class="n mono">src/pg/client.ts</div><div class="c num mono">+204 −31</div></div>
+        <div class="fr"><i style="height:20px"></i><div class="n mono">test/refund/retry.test.ts</div><div class="c num mono">+198 −0</div></div>
+        <div class="fr"><i style="height:12px"></i><div class="n mono">src/refund/backoff.ts</div><div class="c num mono">+96 −12</div></div>
+        <div class="fr"><i style="height:6px"></i><div class="n mono">src/config/refund.ts</div><div class="c num mono">+31 −4</div></div>
+        <div class="cap"><div style="display:flex;justify-content:space-between"><span class="mono">diff 1,284줄</span><span>컨텍스트 한도의 <b class="num">38%</b></span></div><div class="bar"><u></u></div></div>
+      </div>
+      <div class="note">AI 리뷰는 참고용이며 병합·배포 승인이 아닙니다.</div>
+    </div>
+  </div>
+</main>
+</body></html>

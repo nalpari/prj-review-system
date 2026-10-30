@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>Redline 리뷰 상세</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#F6F7F5;--p:#fff;--ink:#1A1A1A;--red:#D7261E;--blue:#2F5FD0;--mu:#6B6F68;--ln:#E3E5E0}
+body{width:1440px;height:900px;overflow:hidden;background:var(--g);color:var(--ink);font:14px/1.5 "IBM Plex Sans KR",sans-serif;display:flex}
+aside{width:232px;height:900px;border-right:1px solid var(--ln);padding:24px 16px;flex:none}
+.logo{font-size:20px;font-weight:600;padding:0 8px;letter-spacing:-.01em}
+.logo b{color:var(--red);font-weight:600}
+.team{color:var(--mu);font-size:13px;padding:2px 8px 24px}
+nav a{display:block;padding:7px 8px;border-radius:6px;color:var(--mu);margin-bottom:2px}
+nav a.on{background:#E6E8E3;color:var(--ink);font-weight:500;border-radius:999px;padding-left:12px}
+.sec{color:var(--mu);font-size:12px;padding:28px 8px 8px}
+.f{display:flex;justify-content:space-between;padding:5px 8px;font:12px "JetBrains Mono",monospace;color:var(--ink)}
+.f.cur{background:#fff;border:1px solid var(--ln);border-radius:6px}
+.f s{text-decoration:none;color:var(--mu)}
+.f em{font-style:normal;color:#2E7D32}.f u{text-decoration:none;color:var(--red)}
+main{flex:1;padding:28px 32px;position:relative}
+.top{display:flex;justify-content:space-between;align-items:flex-start}
+.crumb{color:var(--mu);font-size:13px;margin-bottom:4px}
+h1{font-size:24px;font-weight:600;letter-spacing:-.01em;line-height:1.3}
+.sum{color:var(--mu);margin-top:4px}
+.btn{background:#1A1A1A;color:#fff;border-radius:6px;padding:8px 16px;font-weight:500}
+.meta{display:flex;gap:20px;align-items:center;margin:14px 0 18px;font-size:13px;padding-bottom:14px;border-bottom:1px solid var(--ln)}
+.meta .c b{font-weight:600;margin-left:4px}
+.crit b{color:var(--red)}.sug b{color:var(--blue)}.war b{color:#9A6A00}
+.notice{margin-left:auto;color:var(--mu);border-left:2px solid var(--red);padding-left:10px}
+.proof{position:relative;height:590px}
+.diff{position:absolute;left:0;top:0;width:696px;background:var(--p);border:1px solid var(--ln)}
+.dh{height:36px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--ln);font:500 12px "JetBrains Mono",monospace}
+.dh span{color:var(--mu);font-weight:400}
+.r{height:24px;display:flex;font:12.5px/24px "JetBrains Mono",monospace;white-space:pre}
+.r i{width:44px;text-align:right;padding-right:10px;color:#A3A79F;font-style:normal;flex:none;border-right:1px solid var(--ln)}
+.r code{font:inherit;padding-left:12px;position:relative;flex:1}
+.a{background:#E9F6EA}.a code:before{content:"+";position:absolute;left:0;color:#2E7D32}
+.d{background:#FCEBEA}.d code:before{content:"−";position:absolute;left:0;color:var(--red)}
+.k{color:#7A3E9D}.s{color:#1F7A4D}.cm{color:#8A8E86}
+.hit{box-shadow:inset 3px 0 0 var(--red)}.hb{box-shadow:inset 3px 0 0 var(--blue)}
+.lead{position:absolute;left:696px;width:28px;height:1px;background:var(--ink);opacity:.55}
+.lead.red{background:var(--red);opacity:1}.lead.blue{background:var(--blue);opacity:1}
+.note{position:absolute;left:724px;width:420px;background:var(--p);border:1px solid var(--ln);padding:12px 14px 10px;height:104px}
+.note.red{border-left:2px solid var(--red)}.note.blue{border-left:2px solid var(--blue)}
+.nt{display:flex;align-items:center;gap:8px;font-weight:600}
+.g{font:600 18px/1 "IBM Plex Sans KR",serif;width:18px;text-align:center}
+.red .g,.red .tag{color:var(--red)}.blue .g,.blue .tag{color:var(--blue)}
+.tag{font-size:12px;font-weight:500;margin-left:auto}
+.note p{color:var(--mu);font-size:13px;margin:3px 0 8px 26px;line-height:1.45}
+.nf{display:flex;justify-content:space-between;align-items:center;margin-left:26px}
+.seg{display:flex;border:1px solid var(--ln);border-radius:6px;overflow:hidden;font-size:12px}
+.seg span{padding:2px 10px;color:var(--mu);border-left:1px solid var(--ln)}
+.seg span:first-child{border-left:0}
+.seg .on{background:var(--ink);color:#fff}
+.cc{font-size:12px;color:var(--mu)}
+</style></head><body>
+<aside>
+<div class="logo">Red<b>line</b></div><div class="team">결제팀</div>
+<nav><a>대시보드</a><a class="on">리뷰 요청</a><a>저장소</a><a>팀·권한</a><a>데이터 보존</a></nav>
+<div class="sec">변경 파일 · 4</div>
+<div class="f cur"><span>retry.ts</span><span><em>+14</em> <u>−3</u></span></div>
+<div class="f"><span>client.ts</span><span><em>+22</em> <u>−6</u></span></div>
+<div class="f"><span>refund.test.ts</span><span><em>+41</em> <u>−0</u></span></div>
+<div class="f"><span>config.ts</span><span><em>+3</em> <u>−1</u></span></div>
+</aside>
+<main>
+<div class="top"><div>
+<div class="crumb">payments-api · 리뷰 #218 · 완료 · 모델 Claude</div>
+<h1>feature/refund-retry → main</h1>
+<div class="sum">환불 재시도 로직에서 멱등성 키 누락 1건이 확인되었고, 백오프와 재시도 조건에 개선 제안이 있습니다.</div></div>
+<div class="btn">새 리뷰 요청</div></div>
+<div class="meta"><span class="c crit">치명<b>1</b></span><span class="c war">경고<b>4</b></span><span class="c sug">제안<b>7</b></span>
+<span class="notice">AI 리뷰는 참고용이며 병합·배포 승인이 아닙니다.</span></div>
+<div class="proof">
+<div class="diff">
+<div class="dh">src/refund/retry.ts<span>+14 −3</span></div>
+<div class="r"><i>1</i><code><span class="k">import</span> { gateway } <span class="k">from</span> <span class="s">"./gateway"</span>;</code></div>
+<div class="r"><i>2</i><code><span class="k">import</span> { sleep } <span class="k">from</span> <span class="s">"../lib/time"</span>;</code></div>
+<div class="r"><i>3</i><code> </code></div>
+<div class="r d"><i>4</i><code><span class="k">export async function</span> retryRefund(id: string) {</code></div>
+<div class="r a hb"><i>5</i><code><span class="k">export async function</span> retryRefund(id: string, max = 5) {</code></div>
+<div class="r"><i>6</i><code>  <span class="k">let</span> attempt = 0;</code></div>
+<div class="r d"><i>7</i><code>  <span class="k">while</span> (true) {</code></div>
+<div class="r a"><i>8</i><code>  <span class="k">while</span> (attempt &lt; max) {</code></div>
+<div class="r"><i>9</i><code>    <span class="k">try</span> {</code></div>
+<div class="r a hit"><i>10</i><code>      <span class="k">return await</span> gateway.refund(id);</code></div>
+<div class="r"><i>11</i><code>    } <span class="k">catch</span> (err) {</code></div>
+<div class="r a"><i>12</i><code>      <span class="k">if</span> (!isRetryable(err)) <span class="k">throw</span> err;</code></div>
+<div class="r a"><i>13</i><code>      attempt++;</code></div>
+<div class="r a"><i>14</i><code>      <span class="k">await</span> sleep(2 ** attempt * 100);</code></div>
+<div class="r"><i>15</i><code>    }</code></div>
+<div class="r"><i>16</i><code>  }</code></div>
+<div class="r a"><i>17</i><code>  <span class="k">throw new</span> Error(<span class="s">"refund retry exhausted"</span>);</code></div>
+<div class="r"><i>18</i><code>}</code></div>
+<div class="r"><i>19</i><code> </code></div>
+<div class="r a"><i>20</i><code><span class="k">export function</span> isRetryable(err: unknown) {</code></div>
+<div class="r a hb"><i>21</i><code>  <span class="k">return</span> err <span class="k">instanceof</span> GatewayError &amp;&amp; err.status &gt;= 500;</code></div>
+<div class="r a"><i>22</i><code>}</code></div>
+</div>
+<div class="lead blue" style="top:144px"></div>
+<div class="note blue" style="top:98px"><div class="nt"><span class="g">∧</span>재시도 횟수를 설정으로 분리<span class="tag">제안</span></div>
+<p>기본값 5가 코드에 박혀 있어 환경별 조정이 어렵습니다. config.ts로 옮기세요.</p>
+<div class="nf"><div class="seg"><span class="on">미확인</span><span>확인</span><span>해결</span><span>보류</span></div><span class="cc">댓글 2</span></div></div>
+<div class="lead red" style="top:264px"></div>
+<div class="note red" style="top:218px"><div class="nt"><span class="g">¶</span>멱등성 키 없이 환불을 재호출<span class="tag">치명</span></div>
+<p>타임아웃 후 재시도하면 같은 환불이 두 번 처리될 수 있습니다. 요청마다 고정 키를 전달하세요.</p>
+<div class="nf"><div class="seg"><span>미확인</span><span class="on">확인</span><span>해결</span><span>보류</span></div><span class="cc">댓글 5</span></div></div>
+<div class="lead blue" style="top:504px"></div>
+<div class="note blue" style="top:458px"><div class="nt"><span class="g">∧</span>429 응답도 재시도 대상에 포함<span class="tag">제안</span></div>
+<p>현재는 5xx만 재시도합니다. 속도 제한(429)은 Retry-After를 따라 재시도하는 편이 안전합니다.</p>
+<div class="nf"><div class="seg"><span>미확인</span><span>확인</span><span>해결</span><span class="on">보류</span></div><span class="cc">댓글 0</span></div></div>
+</div>
+</main></body></html>

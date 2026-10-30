@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><title>Redline · 리뷰 요청</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:1440px;height:900px;overflow:hidden;display:flex;font:14px/20px "IBM Plex Sans KR",sans-serif;color:#1F2328;background:#fff}
+aside{width:240px;background:#F6F8FA;border-right:1px solid #D1D9E0;padding:20px 12px}
+.logo{font-size:18px;font-weight:600;padding:0 8px;letter-spacing:-.2px}.logo u{text-decoration:none;color:#CF222E}
+.team{margin:20px 8px 12px;padding-bottom:12px;border-bottom:1px solid #D1D9E0;color:#59636E;font-size:12px}.team b{display:block;color:#1F2328;font-size:14px;font-weight:600}
+.nv{padding:6px 8px;border-radius:6px;margin-bottom:2px;color:#1F2328}.nv.on{background:#EAEEF2;font-weight:600;box-shadow:inset 3px 0 0 #0969DA}
+main{flex:1;padding:32px 40px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start}
+h1{font-size:24px;line-height:32px;font-weight:600}.sub{color:#59636E;margin-top:4px}
+.btn{background:#0969DA;color:#fff;font-weight:500;padding:6px 14px;border-radius:6px}
+.fl{display:flex;gap:8px;margin:24px 0 16px}
+.sel{display:inline-flex;gap:8px;justify-content:space-between;min-width:104px;padding:5px 10px;border:1px solid #D1D9E0;border-radius:6px;color:#59636E}.sel i{font-style:normal;font-size:10px}
+table{width:100%;border-collapse:collapse;border:1px solid #D1D9E0}
+th{text-align:left;font-weight:600;font-size:12px;color:#59636E;background:#F6F8FA;padding:8px 12px;border-bottom:1px solid #D1D9E0}
+td{padding:0 12px;height:48px;border-bottom:1px solid #D1D9E0;white-space:nowrap}tr:last-child td{border:0}
+.mo{font:12px "JetBrains Mono",monospace}.m{color:#59636E}.ri{text-align:right}th.ri{text-align:right}
+.p{display:inline-block;padding:0 8px;border-radius:12px;font-size:12px;line-height:20px;font-weight:500;border:1px solid}
+.w{color:#9A6700}.p.w{background:#FFF8C5;border-color:#F2E08A}.p.r{background:#DDF4FF;color:#0969DA;border-color:#A5D6F5}
+.p.s{background:#DAFBE1;color:#1A7F37;border-color:#A6E3B4}.p.d{background:#FFEBE9;color:#CF222E;border-color:#F5B5B0}.p.n{background:#EFF2F5;color:#59636E;border-color:#D1D9E0}
+b{font-weight:500}b.d{color:#CF222E}a{color:#0969DA;font-weight:500}
+</style></head><body>
+<aside><div class="logo">Red<u>line</u></div><div class="team"><b>결제팀</b>팀 워크스페이스</div><div class="nv">대시보드</div><div class="nv on">리뷰 요청</div><div class="nv">저장소</div><div class="nv">팀·권한</div><div class="nv">데이터 보존</div></aside>
+<main><div class="hd"><div><h1>리뷰 요청</h1><div class="sub">접근 가능한 요청 42건 · 최신순</div></div><div class="btn">새 리뷰 요청</div></div>
+<div class="fl"><span class="sel">저장소<i>▾</i></span><span class="sel">브랜치<i>▾</i></span><span class="sel">요청자<i>▾</i></span><span class="sel">상태<i>▾</i></span><span class="sel">모델<i>▾</i></span><span class="sel">기간<i>▾</i></span></div>
+<table><tr><th>저장소</th><th>브랜치</th><th>요청자</th><th>모델</th><th>상태</th><th class="ri">이슈 (치명 · 경고 · 제안)</th><th>생성</th></tr>
+<tr><td>payments-api</td><td class="mo">feature/refund-retry → main</td><td>김도윤</td><td>Claude</td><td><span class="p r">실행 중</span></td><td class="ri"><b class="d">0</b> · <b class="w">2</b> · <b>5</b></td><td class="m">10월 30일 14:22</td></tr>
+<tr><td>web-console</td><td class="mo">fix/session-timeout → main</td><td>박서연</td><td>Codex</td><td><span class="p s">완료</span></td><td class="ri"><b class="d">1</b> · <b class="w">4</b> · <b>7</b></td><td class="m">10월 30일 13:58</td></tr>
+<tr><td>ledger-batch</td><td class="mo">feature/settle-dedupe → main</td><td>이하준</td><td>Claude</td><td><span class="p d">실패</span></td><td class="ri"><a>재시도</a></td><td class="m">10월 30일 13:40</td></tr>
+<tr><td>payments-api</td><td class="mo">chore/bump-sdk → main</td><td>최민서</td><td>Codex</td><td><span class="p w">대기</span></td><td class="ri"><span class="m">—</span></td><td class="m">10월 30일 13:12</td></tr>
+<tr><td>web-console</td><td class="mo">feature/audit-filter → main</td><td>김도윤</td><td>Claude</td><td><span class="p s">완료</span></td><td class="ri"><b class="d">0</b> · <b class="w">1</b> · <b>3</b></td><td class="m">10월 30일 11:47</td></tr>
+<tr><td>ledger-batch</td><td class="mo">fix/rounding-mode → main</td><td>박서연</td><td>Claude</td><td><span class="p s">완료</span></td><td class="ri"><b class="d">2</b> · <b class="w">3</b> · <b>0</b></td><td class="m">10월 29일 18:05</td></tr>
+<tr><td>payments-api</td><td class="mo">feature/webhook-sign → main</td><td>이하준</td><td>Codex</td><td><span class="p n">취소</span></td><td class="ri"><span class="m">—</span></td><td class="m">10월 29일 17:31</td></tr>
+<tr><td>web-console</td><td class="mo">feature/table-virtual → main</td><td>최민서</td><td>Claude</td><td><span class="p s">완료</span></td><td class="ri"><b class="d">0</b> · <b class="w">0</b> · <b>2</b></td><td class="m">10월 29일 15:20</td></tr>
+<tr><td>ledger-batch</td><td class="mo">feature/export-csv → main</td><td>김도윤</td><td>Codex</td><td><span class="p s">완료</span></td><td class="ri"><b class="d">1</b> · <b class="w">2</b> · <b>4</b></td><td class="m">10월 29일 10:09</td></tr>
+<tr><td>payments-api</td><td class="mo">fix/idempotency-key → main</td><td>박서연</td><td>Claude</td><td><span class="p s">완료</span></td><td class="ri"><b class="d">3</b> · <b class="w">1</b> · <b>1</b></td><td class="m">10월 28일 19:44</td></tr>
+</table></main></body></html>
