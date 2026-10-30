@@ -1,26 +1,155 @@
 @import "tailwindcss";
 
+/* Redline: 지하철 안내판 세계. 크롬은 바탕과 잉크 두 값, 색은 노선(저장소)과 상태에만. */
+@theme {
+  --color-ground: #f3f4f1;
+  --color-surface: #ffffff;
+  --color-raised: #f8f9f6;
+  --color-active: #e6e8e3;
+  --color-border: #dfe2dc;
+  --color-rule: #ebede8;
+  --color-control: #c9cdc5;
+  --color-ink: #15171a;
+  --color-muted: #555a53;
+  --color-faint: #686d66;
+
+  --color-positive: #247b50;
+  --color-positive-bg: #dcf5e5;
+  --color-positive-ink: #0b3a20;
+  --color-negative: #c4242a;
+  --color-negative-bg: #fde9e7;
+  --color-negative-ink: #831c1e;
+  --color-warning: #a35a00;
+  --color-warning-bg: #fff3dc;
+  --color-warning-ink: #6e3d00;
+
+  --font-sans: var(--font-wanted), "Apple SD Gothic Neo", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --radius-card: 8px;
+  --radius-control: 6px;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --line: #00a84d;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-feature-settings: "ss01";
+  -webkit-font-smoothing: antialiased;
+  /* 한글은 어절 단위로 줄을 바꾼다. 긴 경로·해시만 강제로 끊는다. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  accent-color: var(--color-ink);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+select.rl-select {
+  appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%2315171a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+}
+
+summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+summary::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath d='M2.5 1 5.5 4l-3 3' fill='none' stroke='%23831c1e' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+  transition: transform 150ms;
+}
+details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+/* 날짜 입력: 비었을 때 흐린 글자, 달력 아이콘은 직접 그린 것으로. */
+input[type="date"][data-empty="true"]::-webkit-datetime-edit {
+  color: var(--color-faint);
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none' stroke='%2315171a' stroke-width='1.4' stroke-linecap='round'%3E%3Crect x='1.5' y='2.5' width='11' height='10' rx='2'/%3E%3Cpath d='M1.5 6h11M4.5 1v3M9.5 1v3'/%3E%3C/svg%3E") no-repeat center;
+  opacity: 0.8;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100dvh;
+}
+
+::selection {
+  background: #15171a;
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-control) transparent;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+input,
+textarea,
+select {
+  caret-color: var(--color-ink);
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+/* 노선도 치수. 좁은 화면에서는 이름표와 역 간격을 줄이고 역명은 숨긴다. */
+.rl-route {
+  --rl-labels: 196px;
+  --rl-station: 96px;
+}
+@media (max-width: 640px) {
+  .rl-route {
+    --rl-labels: 108px;
+    --rl-station: 64px;
+  }
+}
+
+/* 실행 중: 열차가 지선을 따라 달린다. */
+@keyframes rl-train {
+  0% { left: 0%; }
+  100% { left: calc(100% - 64px); }
+}
+.rl-train-running {
+  animation: rl-train 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rl-train-running {
+    animation: none;
+    left: calc(50% - 32px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0ms !important;
+  }
 }
