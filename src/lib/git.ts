@@ -1,6 +1,8 @@
 import "server-only";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { maskSecrets } from "./mask";
 import type { Commit, DiffStats } from "./types";
 
@@ -26,6 +28,48 @@ async function guard<T>(fn: () => Promise<T>, what: string): Promise<T> {
     const msg = (e as { stderr?: string }).stderr?.trim() || (e as Error).message;
     throw new GitError(what, msg.split("\n")[0]);
   }
+}
+
+// 원격 저장소는 서버의 REPOS_DIR 아래 bare 클론으로 둔다. 원격 브랜치가 클론의 refs/heads로 그대로 들어오므로
+// 브랜치·커밋·diff 읽기는 로컬 저장소와 같은 코드를 쓴다. 인증은 서버의 git 자격증명(SSH 키, credential helper)을 쓴다.
+const NO_PROMPT = { ...process.env, GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: process.env.GIT_SSH_COMMAND ?? "ssh -o BatchMode=yes" };
+
+export function reposDir() {
+  // 런타임 데이터 디렉터리라 배포 산출물 추적에서 뺀다(빼지 않으면 프로젝트 전체가 추적된다).
+  return path.resolve(/*turbopackIgnore: true*/ process.env.REPOS_DIR || path.join(process.cwd(), ".data", "repos"));
+}
+
+// https·ssh URL과 scp 형식(git@host:org/repo.git)만 받는다. 자격증명은 URL에 넣지 않는다(저장되고 화면에 보인다).
+export function checkRemoteUrl(url: string): string | undefined {
+  if (/^[\w.-]+@[\w.-]+:[\w./~-]+$/.test(url)) return;
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    return "원격 URL 형식이 아닙니다. https://… 또는 git@host:org/repo.git 형식으로 입력하세요.";
+  }
+  if (u.protocol !== "https:" && u.protocol !== "ssh:") return "https 또는 ssh 원격 URL만 등록할 수 있습니다.";
+  if (u.password || (u.protocol === "https:" && u.username)) return "URL에 계정·토큰을 넣지 마세요. 서버의 git 자격증명(SSH 키, credential helper)으로 인증합니다.";
+}
+
+export async function cloneRemote(url: string, dest: string) {
+  await fs.mkdir(path.dirname(dest), { recursive: true });
+  await guard(() => run("git", ["clone", "--bare", "--", url, dest], { env: NO_PROMPT, timeout: 600_000, maxBuffer: 16 * 1024 * 1024 }), "원격 저장소를 클론할 수 없습니다");
+  // bare 클론은 기본 fetch refspec이 없어서, 이후 fetch가 브랜치를 갱신하도록 지정한다.
+  await git(dest, ["config", "remote.origin.fetch", "+refs/heads/*:refs/heads/*"]);
+}
+
+// 같은 저장소에 fetch가 겹치면 git 잠금 오류가 나므로 진행 중인 fetch를 함께 기다린다.
+const fetching = new Map<string, Promise<void>>();
+export function syncRemote(repoPath: string): Promise<void> {
+  let p = fetching.get(repoPath);
+  if (!p) {
+    p = guard(() => run("git", ["-C", repoPath, "fetch", "--prune", "origin"], { env: NO_PROMPT, timeout: 120_000 }), "원격 저장소에서 최신 브랜치를 받아오지 못했습니다")
+      .then(() => undefined)
+      .finally(() => fetching.delete(repoPath));
+    fetching.set(repoPath, p);
+  }
+  return p;
 }
 
 export async function listBranches(repoPath: string): Promise<string[]> {

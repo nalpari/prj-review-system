@@ -47,7 +47,7 @@ async function RepositoriesPageContent() {
                 <LineBadge repo={r} size={28} />
                 <div className="min-w-0">
                   <p className="font-semibold">{r.name}</p>
-                  <p className="truncate font-mono text-[12px] text-muted" title={r.local_path}>{r.local_path} · 기본 {r.default_branch || "main"}</p>
+                  <p className="truncate font-mono text-[12px] text-muted" title={r.remote_url || r.local_path}>{r.remote_url || r.local_path} · 기본 {r.default_branch || "main"}</p>
                   <p className="text-[12px] text-muted">{r.expand?.team?.name}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1 text-[13px]">
@@ -76,9 +76,9 @@ async function RepositoriesPageContent() {
                 <input id="name" name="name" className={field} placeholder="payments-api" required />
               </div>
               <div>
-                <label className={label} htmlFor="local_path">서버의 로컬 경로</label>
-                <input id="local_path" name="local_path" className={`${field} font-mono`} placeholder="/srv/git/payments-api" required />
-                <p className="mt-1 text-[12px] text-muted">이 서버가 git 명령으로 읽을 수 있어야 합니다. 원격 동기화는 하지 않습니다.</p>
+                <label className={label} htmlFor="remote_url">원격 저장소 URL</label>
+                <input id="remote_url" name="remote_url" className={`${field} font-mono`} placeholder="git@github.com:acme/payments-api.git" required />
+                <p className="mt-1 text-[12px] text-muted">서버가 새로 클론하고, 리뷰할 때마다 푸시된 최신 브랜치를 받아옵니다. 비공개 저장소는 서버의 SSH 키나 git 자격증명으로 인증합니다. URL에 토큰을 넣지 마세요.</p>
               </div>
               <div>
                 <label className={label} htmlFor="default_branch">기본 타깃 브랜치</label>

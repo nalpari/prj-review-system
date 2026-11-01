@@ -6,6 +6,7 @@ import { Info } from "lucide-react";
 import { RouteMap } from "@/components/route-map";
 import { InlineError, LineBadge, Panel, RunPill } from "@/components/ui";
 import { PageSkeleton } from "@/components/page-skeleton";
+import { Prose } from "@/components/prose";
 import { excerpt, parseDiff } from "@/lib/diff";
 import { MODEL_LABEL, RETENTION_LABEL, SEVERITY_LABEL, SEVERITIES, duration, formatDate, nf, relative } from "@/lib/labels";
 import { maskSecrets } from "@/lib/mask";
@@ -135,8 +136,8 @@ async function ReviewPageContent({ params }: PageProps<"/reviews/[id]">) {
             <div className="px-5 py-4">
               {req.status === "completed" ? (
                 <>
-                  <p className="max-w-[72ch] text-[16px] leading-6">{req.summary || "요약이 저장되지 않았습니다."}</p>
-                  <p className="num mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
+                  {req.summary ? <Prose text={req.summary} className="text-[16px] leading-7" /> : <p className="text-muted">요약이 저장되지 않았습니다.</p>}
+                  <p className="num mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
                     {counts.map(([s, n]) => (
                       <span key={s}><span className="text-muted">{SEVERITY_LABEL[s]}</span> <span className={s === "critical" && n > 0 ? "font-bold text-negative" : "font-semibold"}>{n}</span></span>
                     ))}

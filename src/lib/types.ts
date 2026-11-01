@@ -20,6 +20,7 @@ export type Repository = {
   id: string;
   team: string;
   name: string;
+  remote_url: string;
   local_path: string;
   default_branch: string;
   line_no: number;
@@ -51,6 +52,7 @@ export type ReviewRequest = {
   partial: boolean;
   error: string;
   started_at: string;
+  heartbeat_at: string;
   finished_at: string;
   retention: Retention;
   retention_changed_at: string;

@@ -62,13 +62,18 @@ Copy-Item .env.example .env.local     # Windows PowerShell
 Next.js 앱과 `pnpm pb:superuser`, `pnpm pb:seed`, `pnpm test:rules`가 이 파일을 읽는다. 셸에 같은 이름의 환경변수가 있으면 그 값이 우선한다. 서버는 이 슈퍼유저 계정으로만 리뷰 결과·실행 상태·댓글·이력을 쓴다. 사용자 토큰으로는 PocketBase 규칙이 이 쓰기를 막는다. 값을 바꾸면 `pnpm pb:superuser`를 다시 실행한다.
 
 데모 계정: `admin@redline.local` / `redline-demo-1` (시스템 관리자), `seoyeon@redline.local` / `redline-demo-1` (결제팀 개발자).
-시드의 사람·저장소·커밋·리뷰 결과는 모두 예시 데이터다. 시드 저장소 경로(`/srv/git/...`)는 실제로 없으므로, 리뷰를 새로 요청하려면 저장소 화면에서 이 서버의 실제 Git 저장소 경로를 등록한다.
+시드의 사람·저장소·커밋·리뷰 결과는 모두 예시 데이터다. 시드 저장소 경로(`/srv/git/...`)는 실제로 없으므로, 리뷰를 새로 요청하려면 저장소 화면에서 원격 저장소 URL을 등록한다.
+
+### 리뷰 대상 저장소
+
+저장소는 원격 URL(https, ssh, `git@host:org/repo.git`)로 등록한다. 서버가 `REPOS_DIR`(기본 `.data/repos`) 아래에 bare 클론을 만들고, 브랜치 목록을 열 때와 리뷰를 요청할 때 `git fetch --prune`으로 푸시된 최신 브랜치를 받는다. 리뷰는 푸시된 브랜치 기준이다. 비공개 저장소는 서버 계정의 SSH 키나 git credential helper로 인증하고, URL에 토큰을 넣지 않는다.
 
 ## 구조
 
 - `pocketbase/pb_migrations/` 컬렉션과 접근 규칙. 팀 멤버십이 저장소·리뷰·이슈·댓글 접근을 결정하고, 서버(PocketBase)가 강제한다.
-- `src/lib/git.ts` 브랜치·커밋·diff 수집(셸 없이 인자 배열로 git 호출, 저장 전 비밀정보 마스킹 `src/lib/mask.ts`).
-- `src/lib/runner.ts` 로컬 실행 어댑터. 지금은 CLI 존재만 확인하고 재시도 가능한 실패로 기록한다. 실제 Claude/Codex 실행 연동은 다음 단계.
+- `src/lib/git.ts` 원격 저장소 클론·fetch, 브랜치·커밋·diff 수집(셸 없이 인자 배열로 git 호출, 저장 전 비밀정보 마스킹 `src/lib/mask.ts`).
+- `src/lib/runner.ts` 리뷰 실행. 리뷰 대상 커밋을 임시 작업 폴더로 꺼내고, 이 서버에 설치·로그인된 `claude`(`-p`, 읽기 도구만) 또는 `codex exec`(읽기 전용 샌드박스)에 diff·커밋·맥락을 넘겨 JSON 결과를 받는다. 해석은 `src/lib/review-output.ts`. 취소·재시도하면 실행 중인 CLI를 멈추고, `REVIEW_TIMEOUT_MS`(기본 20분)를 넘기면 중단한다.
+- `src/lib/stale-runs.ts` 멈춘 실행 정리. 실행기는 5초마다 `heartbeat_at`을 남기고, 앱 서버(`src/instrumentation.ts`가 띄우는 1분 주기 작업)는 2분 넘게 하트비트가 없는 실행과 2분 넘게 대기 중인 요청을 재시도 가능한 실패로 돌린다. 앱 서버가 실행 중에 재시작돼도 요청이 "실행 중"에 남지 않는다.
 - `src/components/route-map.tsx` 브랜치 노선도(타깃=본선, 현재 브랜치=지선, 커밋=역, 실행 상태=열차).
 
 `pnpm test`로 마스킹·diff 파서 검사를, `pnpm test:rules`로 PocketBase 접근 규칙 통합 검사(PocketBase 실행 중이어야 함)를 돌린다.
