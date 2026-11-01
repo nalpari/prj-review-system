@@ -2,16 +2,17 @@
   "name": "prj-review-system",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.18.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pb:serve": "cd pocketbase && ./pocketbase serve --http=127.0.0.1:8090",
-    "pb:superuser": "cd pocketbase && ./pocketbase superuser upsert ${PB_SUPERUSER_EMAIL:-superuser@redline.local} ${PB_SUPERUSER_PASSWORD:-redline-superuser-1}",
-    "pb:seed": "node scripts/seed.mjs",
+    "pb:serve": "node scripts/pb.mjs serve",
+    "pb:superuser": "node --env-file-if-exists=.env.local scripts/pb.mjs superuser",
+    "pb:seed": "node --env-file-if-exists=.env.local scripts/seed.mjs",
     "test": "node --test src/lib/*.test.ts",
-    "test:rules": "node --test scripts/rules.test.mjs"
+    "test:rules": "node --env-file-if-exists=.env.local --test scripts/rules.test.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.65.0",

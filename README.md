@@ -4,20 +4,62 @@
 
 ## 로컬 실행
 
+pnpm 명령은 저장소가 있는 OS의 터미널에서 실행한다. WSL에 둔 저장소는 WSL 터미널에서 실행한다(Windows PowerShell에서 `\\wsl.localhost\...` 경로로 `pnpm install`을 돌리면 심볼릭 링크를 다루지 못해 실패한다).
+
 ```bash
-npm install
-
-# PocketBase 바이너리 (macOS arm64 예시, 다른 OS는 releases에서 받기)
-curl -L -o /tmp/pb.zip https://github.com/pocketbase/pocketbase/releases/download/v0.40.6/pocketbase_0.40.6_darwin_arm64.zip
-unzip -o /tmp/pb.zip pocketbase -d pocketbase
-
-npm run pb:superuser   # 슈퍼유저 (PB_SUPERUSER_EMAIL / PB_SUPERUSER_PASSWORD)
-npm run pb:serve       # http://127.0.0.1:8090, 시작할 때 pb_migrations 적용, pb_hooks 로드(실행 상태 전이)
-npm run pb:seed        # 다른 터미널에서, 데모 데이터
-npm run dev            # http://localhost:3000
+pnpm install
 ```
 
-`.env.local`에 `PB_SUPERUSER_EMAIL`, `PB_SUPERUSER_PASSWORD`(필요하면 `POCKETBASE_URL`)를 둔다. 서버는 이 계정으로만 리뷰 결과·실행 상태·댓글·이력을 쓴다. 사용자 토큰으로는 PocketBase 규칙이 이 쓰기를 막는다.
+### PocketBase 바이너리
+
+`pocketbase/`에 OS에 맞는 v0.40.6 바이너리를 받는다(git에서 제외된다). 다른 CPU는 [releases](https://github.com/pocketbase/pocketbase/releases/tag/v0.40.6)에서 같은 이름 규칙의 파일을 받는다.
+
+macOS (Apple Silicon, Intel은 `darwin_amd64`):
+
+```bash
+curl -L -o /tmp/pb.zip https://github.com/pocketbase/pocketbase/releases/download/v0.40.6/pocketbase_0.40.6_darwin_arm64.zip
+unzip -o /tmp/pb.zip pocketbase -d pocketbase
+```
+
+Linux / WSL (x86_64, ARM은 `linux_arm64`):
+
+```bash
+curl -L -o /tmp/pb.zip https://github.com/pocketbase/pocketbase/releases/download/v0.40.6/pocketbase_0.40.6_linux_amd64.zip
+unzip -o /tmp/pb.zip pocketbase -d pocketbase
+```
+
+Windows PowerShell (x64, ARM은 `windows_arm64`):
+
+```powershell
+Invoke-WebRequest -Uri https://github.com/pocketbase/pocketbase/releases/download/v0.40.6/pocketbase_0.40.6_windows_amd64.zip -OutFile $env:TEMP\pb.zip
+Expand-Archive -Path $env:TEMP\pb.zip -DestinationPath $env:TEMP\pb -Force
+Copy-Item $env:TEMP\pb\pocketbase.exe pocketbase\
+```
+
+### 실행
+
+`pb:*` 스크립트는 `scripts/pb.mjs`가 OS에 맞는 바이너리(`pocketbase` 또는 `pocketbase.exe`)를 골라 실행하므로 세 OS에서 같다.
+
+```bash
+pnpm pb:superuser   # 슈퍼유저 (.env.local의 PB_SUPERUSER_EMAIL / PB_SUPERUSER_PASSWORD)
+pnpm pb:serve       # http://127.0.0.1:8090, 시작할 때 pb_migrations 적용, pb_hooks 로드(실행 상태 전이)
+pnpm pb:seed        # 다른 터미널에서, 데모 데이터
+pnpm dev            # http://localhost:3000
+```
+
+### 환경변수
+
+`PB_SUPERUSER_EMAIL`, `PB_SUPERUSER_PASSWORD`, `POCKETBASE_URL`은 `.env.local`에 둔다(git에서 제외). `.env.example`을 복사해서 시작한다.
+
+```bash
+cp .env.example .env.local            # macOS / Linux
+```
+
+```powershell
+Copy-Item .env.example .env.local     # Windows PowerShell
+```
+
+Next.js 앱과 `pnpm pb:superuser`, `pnpm pb:seed`, `pnpm test:rules`가 이 파일을 읽는다. 셸에 같은 이름의 환경변수가 있으면 그 값이 우선한다. 서버는 이 슈퍼유저 계정으로만 리뷰 결과·실행 상태·댓글·이력을 쓴다. 사용자 토큰으로는 PocketBase 규칙이 이 쓰기를 막는다. 값을 바꾸면 `pnpm pb:superuser`를 다시 실행한다.
 
 데모 계정: `admin@redline.local` / `redline-demo-1` (시스템 관리자), `seoyeon@redline.local` / `redline-demo-1` (결제팀 개발자).
 시드의 사람·저장소·커밋·리뷰 결과는 모두 예시 데이터다. 시드 저장소 경로(`/srv/git/...`)는 실제로 없으므로, 리뷰를 새로 요청하려면 저장소 화면에서 이 서버의 실제 Git 저장소 경로를 등록한다.
@@ -29,4 +71,4 @@ npm run dev            # http://localhost:3000
 - `src/lib/runner.ts` 로컬 실행 어댑터. 지금은 CLI 존재만 확인하고 재시도 가능한 실패로 기록한다. 실제 Claude/Codex 실행 연동은 다음 단계.
 - `src/components/route-map.tsx` 브랜치 노선도(타깃=본선, 현재 브랜치=지선, 커밋=역, 실행 상태=열차).
 
-`npm test`로 마스킹·diff 파서 검사를, `npm run test:rules`로 PocketBase 접근 규칙 통합 검사(PocketBase 실행 중이어야 함)를 돌린다.
+`pnpm test`로 마스킹·diff 파서 검사를, `pnpm test:rules`로 PocketBase 접근 규칙 통합 검사(PocketBase 실행 중이어야 함)를 돌린다.

@@ -1,4 +1,4 @@
-// PocketBase 접근 규칙 통합 검사. 실행: npm run test:rules (PocketBase가 떠 있어야 한다)
+// PocketBase 접근 규칙 통합 검사. 실행: pnpm test:rules (PocketBase가 떠 있어야 한다)
 // 슈퍼유저로 임시 데이터를 만들고, 구성원·관리자 토큰으로 직접 API를 호출해 본 뒤 지운다.
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
