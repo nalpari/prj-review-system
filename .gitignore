@@ -46,5 +46,8 @@ next-env.d.ts
 /pocketbase/pocketbase.exe
 /pocketbase/pb_data/
 
+# 서버가 클론한 리뷰 대상 저장소(REPOS_DIR 기본값)
+/.data/
+
 # impeccable 검증 캡처(다시 만들 수 있음)
 /.impeccable/review/

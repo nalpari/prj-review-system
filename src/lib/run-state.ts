@@ -19,12 +19,12 @@ export async function transition(pb: PocketBase, id: string, from: string[], set
 export async function runAttempt(
   pb: PocketBase,
   id: string,
-  execute: () => Promise<{ status: "failed" | "completed"; error?: string; summary?: string }>,
+  execute: (runId: string) => Promise<{ status: "failed" | "completed"; error?: string; summary?: string; partial?: boolean }>,
 ): Promise<AttemptResult> {
   const runId = crypto.randomUUID();
-  if (!(await transition(pb, id, ["queued"], { status: "running", run_id: runId, started_at: new Date().toISOString(), error: "" }))) return "skipped";
+  if (!(await transition(pb, id, ["queued"], { status: "running", run_id: runId, started_at: new Date().toISOString(), heartbeat_at: new Date().toISOString(), error: "" }))) return "skipped";
 
-  const result = await execute();
+  const result = await execute(runId);
 
   const wrote = await transition(pb, id, ["running"], { ...result, finished_at: new Date().toISOString() }, runId);
   return wrote ? "finished" : "superseded";

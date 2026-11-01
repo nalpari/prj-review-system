@@ -1,37 +1,46 @@
 "use server";
 
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { revalidatePath } from "next/cache";
 import type PocketBase from "pocketbase";
+import { checkRemoteUrl, cloneRemote, GitError, reposDir } from "@/lib/git";
 import { errorMessage, requireAdmin, requireSession } from "@/lib/pb";
 import { SEOUL_LINES } from "@/lib/lines";
 import type { Membership, Retention, ReviewRequest } from "@/lib/types";
 
-const run = promisify(execFile);
 export type ActionState = { error?: string; ok?: string };
 
 export async function addRepository(_: ActionState, form: FormData): Promise<ActionState> {
   const { pb } = await requireAdmin();
   const name = String(form.get("name") ?? "").trim();
-  const localPath = String(form.get("local_path") ?? "").trim();
+  const remoteUrl = String(form.get("remote_url") ?? "").trim();
   const team = String(form.get("team") ?? "");
   const lineNo = Number(form.get("line_no"));
   const line = SEOUL_LINES[lineNo];
-  if (!name || !localPath || !team) return { error: "팀, 이름, 로컬 경로를 모두 입력하세요." };
+  if (!name || !remoteUrl || !team) return { error: "팀, 이름, 원격 URL을 모두 입력하세요." };
   if (!line) return { error: "노선을 고르세요." };
-  if (!localPath.startsWith("/")) return { error: "로컬 경로는 서버의 절대 경로여야 합니다(예: /srv/git/payments-api)." };
+  const urlError = checkRemoteUrl(remoteUrl);
+  if (urlError) return { error: urlError };
+
+  // 서버에 새로 클론한다. 디렉터리 이름이 겹치지 않게 임의 접미사를 붙인다.
+  const slug = name.toLowerCase().replace(/[^a-z0-9._-]+/g, "-").replace(/^[-.]+/, "").slice(0, 60) || "repo";
+  const localPath = path.join(reposDir(), `${slug}-${randomUUID().slice(0, 8)}.git`);
   try {
-    await run("git", ["-C", localPath, "rev-parse", "--git-dir"], { timeout: 5000 });
-  } catch {
-    return { error: `${localPath}에서 Git 저장소를 찾을 수 없습니다. 서버에서 경로와 읽기 권한을 확인하세요.` };
+    await cloneRemote(remoteUrl, localPath);
+  } catch (e) {
+    await fs.rm(localPath, { recursive: true, force: true });
+    const detail = e instanceof GitError && e.detail ? ` (git: ${e.detail})` : "";
+    return { error: `${remoteUrl}을(를) 클론하지 못했습니다. URL과 서버의 git 접근 권한(SSH 키, credential helper)을 확인하세요.${detail}` };
   }
   try {
     await pb.collection("repositories").create({
-      team, name, local_path: localPath, default_branch: String(form.get("default_branch") ?? "main").trim() || "main",
+      team, name, remote_url: remoteUrl, local_path: localPath, default_branch: String(form.get("default_branch") ?? "main").trim() || "main",
       line_no: lineNo, line_color: line.color, retention: "retained",
     });
   } catch (e) {
+    await fs.rm(localPath, { recursive: true, force: true });
     return { error: `저장소를 등록하지 못했습니다. ${errorMessage(e)}` };
   }
   revalidatePath("/", "layout");

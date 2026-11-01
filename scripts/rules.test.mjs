@@ -169,6 +169,28 @@ test("취소 뒤 바로 재시도하면 이전 시도가 돌고 있어도 새 �
   assert.equal(saved.summary, "새 시도");
 });
 
+test("하트비트가 끊긴 실행만 실패로 돌리고, 살아 있는 실행은 두며, 결과는 이후 그 시도가 쓰지 못한다", async () => {
+  const { failStaleRuns, STALE_RUNNING_MS } = await import("../src/lib/stale-runs.ts");
+  const { transition } = await import("../src/lib/run-state.ts");
+  // 기준 시각을 과거로 잡아 이 검사 밖의 실제 데이터(지금 시각의 running·queued)는 정리 대상이 되지 않게 한다.
+  const now = Date.parse("2000-01-01T00:10:00Z");
+  const running = (key, heartbeat) => su.collection("review_requests").create({
+    repository: f.repo.id, requester: f.dev.id, current_branch: "a", target_branch: "b", model: "claude",
+    status: "running", run_id: `${tag}-${key}`, started_at: "2000-01-01 00:00:00.000Z", heartbeat_at: heartbeat,
+    idempotency_key: `${tag}-${key}`, retention: "retained",
+  });
+  const dead = await running("dead", new Date(now - STALE_RUNNING_MS - 1000).toISOString());
+  const alive = await running("alive", new Date(now - 5000).toISOString());
+
+  assert.equal(await failStaleRuns(su, now), 1);
+  const d = await su.collection("review_requests").getOne(dead.id);
+  assert.equal(d.status, "failed");
+  assert.match(d.error, /멈췄습니다/);
+  assert.equal((await su.collection("review_requests").getOne(alive.id)).status, "running");
+  // 멈춘 것으로 처리된 시도가 뒤늦게 살아나도 하트비트·결과를 쓰지 못한다.
+  assert.equal(await transition(su, dead.id, ["running"], { heartbeat_at: new Date().toISOString() }, `${tag}-dead`), false);
+});
+
 test("동시에 시작해도 대기 중인 요청은 한 시도만 점유한다", async () => {
   const { runAttempt } = await import("../src/lib/run-state.ts");
   const req = await su.collection("review_requests").create({

@@ -5,7 +5,7 @@ import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ClientResponseError } from "pocketbase";
-import { collectDiff, GitError, listCommits } from "@/lib/git";
+import { collectDiff, GitError, listCommits, syncRemote } from "@/lib/git";
 import { maskSecrets } from "@/lib/mask";
 import { errorMessage, requireSession } from "@/lib/pb";
 import { pbService } from "@/lib/pb-service";
@@ -52,6 +52,8 @@ export async function createReview(_: FormState, form: FormData): Promise<FormSt
 
   let created: ReviewRequest;
   try {
+    // 원격 저장소는 푸시된 최신 상태를 기준으로 리뷰한다.
+    if (repo.remote_url) await syncRemote(repo.local_path);
     const commits = await listCommits(repo.local_path, target, current);
     if (commits.length === 0) return { error: `${current}에는 ${target}에 없는 커밋이 없습니다. 커밋한 뒤 다시 신청하세요.` };
     const diff = await collectDiff(repo.local_path, target, current);
