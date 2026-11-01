@@ -14,7 +14,7 @@ const QUEUED_MSG = "실행이 시작되지 않았습니다(앱 서버 재시작 
 type Row = Pick<ReviewRequest, "id"> & { run_id: string };
 
 // 오래 멈춘 실행·대기를 실패로 돌리고 돌린 개수를 돌려준다.
-// 실패 전이는 비교 후 쓰기라서, 목록을 읽은 뒤 실행이 끝났거나 다른 시도가 시작됐으면 건드리지 않는다.
+// 실패 전이는 비교 후 쓰기라서, 목록을 읽은 뒤 실행이 끝났거나 다른 시도가 시작됐거나 하트비트가 갱신됐으면 건드리지 않는다.
 export async function failStaleRuns(pb: PocketBase, now = Date.now()): Promise<number> {
   const runningCutoff = new Date(now - STALE_RUNNING_MS);
   const queuedCutoff = new Date(now - STALE_QUEUED_MS);
@@ -31,7 +31,7 @@ export async function failStaleRuns(pb: PocketBase, now = Date.now()): Promise<n
     }),
   ]);
   let n = 0;
-  for (const r of running) if (await transition(pb, r.id, ["running"], { status: "failed", error: RUNNING_MSG, finished_at }, r.run_id)) n++;
-  for (const r of queued) if (await transition(pb, r.id, ["queued"], { status: "failed", error: QUEUED_MSG, finished_at })) n++;
+  for (const r of running) if (await transition(pb, r.id, ["running"], { status: "failed", error: RUNNING_MSG, finished_at }, r.run_id, { staleBefore: runningCutoff.toISOString() })) n++;
+  for (const r of queued) if (await transition(pb, r.id, ["queued"], { status: "failed", error: QUEUED_MSG, finished_at }, undefined, { staleBefore: queuedCutoff.toISOString() })) n++;
   return n;
 }

@@ -191,6 +191,70 @@ test("하트비트가 끊긴 실행만 실패로 돌리고, 살아 있는 실행
   assert.equal(await transition(su, dead.id, ["running"], { heartbeat_at: new Date().toISOString() }, `${tag}-dead`), false);
 });
 
+test("이슈는 완료 전이와 함께 한 번에 게시되고, 실패·밀려난 시도의 이슈는 남지 않는다", async () => {
+  const { runAttempt, transition } = await import("../src/lib/run-state.ts");
+  const req = await su.collection("review_requests").create({
+    repository: f.repo.id, requester: f.dev.id, current_branch: "a", target_branch: "b", model: "claude",
+    status: "queued", idempotency_key: `${tag}-publish`, retention: "retained",
+  });
+  const issuesOf = () => su.collection("issues").getFullList({ filter: su.filter("request = {:id}", { id: req.id }) });
+  const issue = (title, severity = "warning") => ({ model: "claude", status: "unread", severity, title });
+
+  // 이슈 하나가 저장 규칙에 걸리면 다른 이슈도, 완료 전이도 쓰이지 않는다(일부 저장 후 실패 없음).
+  await assert.rejects(runAttempt(su, req.id, async () => ({ status: "completed", summary: "s", issues: [issue("앞 이슈"), issue("잘못된 이슈", "bogus")] })));
+  assert.equal((await su.collection("review_requests").getOne(req.id)).status, "running");
+  assert.equal((await issuesOf()).length, 0);
+
+  // 재시도가 앞지른 시도는 이슈를 하나도 게시하지 못한다.
+  await su.collection("review_requests").update(req.id, { status: "queued" });
+  const r = await runAttempt(su, req.id, async () => {
+    assert.equal(await transition(su, req.id, ["running"], { status: "canceled" }), true);
+    return { status: "completed", summary: "밀려난 시도", issues: [issue("밀려난 이슈")] };
+  });
+  assert.equal(r, "superseded");
+  assert.equal((await issuesOf()).length, 0);
+
+  // 재시도가 완료되면 이전에 남아 있던 이슈를 지우고 새 결과만 남긴다.
+  await su.collection("issues").create({ request: req.id, severity: "warning", title: "이전 시도 이슈", status: "unread" });
+  await su.collection("review_requests").update(req.id, { status: "queued" });
+  assert.equal(await runAttempt(su, req.id, async () => ({ status: "completed", summary: "새 시도", issues: [issue("새 이슈 1"), issue("새 이슈 2")] })), "finished");
+  assert.deepEqual((await issuesOf()).map((i) => i.title).sort(), ["새 이슈 1", "새 이슈 2"]);
+});
+
+test("정리 작업이 목록을 읽은 뒤 하트비트가 갱신되면 그 실행은 실패로 돌리지 않는다", async () => {
+  const { failStaleRuns, STALE_RUNNING_MS } = await import("../src/lib/stale-runs.ts");
+  const { transition } = await import("../src/lib/run-state.ts");
+  const now = Date.parse("2000-01-01T00:10:00Z");
+  const revived = await su.collection("review_requests").create({
+    repository: f.repo.id, requester: f.dev.id, current_branch: "a", target_branch: "b", model: "claude",
+    status: "running", run_id: `${tag}-revived`, started_at: "2000-01-01 00:00:00.000Z",
+    heartbeat_at: new Date(now - STALE_RUNNING_MS - 1000).toISOString(), idempotency_key: `${tag}-revived`, retention: "retained",
+  });
+  // 목록 조회 직후, 실패 전이 전에 실행기가 하트비트를 갱신한 상황을 만든다.
+  const racy = Object.create(su);
+  racy.collection = (name) => {
+    const c = su.collection(name);
+    if (name !== "review_requests") return c;
+    return Object.assign(Object.create(c), {
+      getFullList: async (opts) => {
+        const rows = await c.getFullList(opts);
+        if (rows.some((r) => r.id === revived.id)) await su.collection("review_requests").update(revived.id, { heartbeat_at: new Date(now).toISOString() });
+        return rows;
+      },
+    });
+  };
+  assert.equal(await failStaleRuns(racy, now), 0);
+  assert.equal((await su.collection("review_requests").getOne(revived.id)).status, "running");
+
+  // 대기도 같은 트랜잭션에서 updated를 다시 본다. 방금 갱신된 행은 과거 기준 시각으로 실패시키지 못한다.
+  const queued = await su.collection("review_requests").create({
+    repository: f.repo.id, requester: f.dev.id, current_branch: "a", target_branch: "b", model: "claude",
+    status: "queued", idempotency_key: `${tag}-queued-fresh`, retention: "retained",
+  });
+  assert.equal(await transition(su, queued.id, ["queued"], { status: "failed" }, undefined, { staleBefore: new Date(now).toISOString() }), false);
+  assert.equal((await su.collection("review_requests").getOne(queued.id)).status, "queued");
+});
+
 test("동시에 시작해도 대기 중인 요청은 한 시도만 점유한다", async () => {
   const { runAttempt } = await import("../src/lib/run-state.ts");
   const req = await su.collection("review_requests").create({

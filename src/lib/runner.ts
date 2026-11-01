@@ -87,9 +87,31 @@ function killTree(pid: number | undefined) {
   }
 }
 
+// CLI에는 실행·로그인에 필요한 환경변수만 넘긴다. 리뷰 대상 코드에 심은 프롬프트 인젝션이 셸로 env를 읽어
+// 결과에 적는 경로를 막기 위해서다(PB_SUPERUSER_PASSWORD 등 앱 서버 비밀을 물려주지 않는다).
+// CLI 인증 파일(~/.claude, ~/.codex)은 여전히 읽을 수 있으므로, 배포 때는 별도 OS 사용자·컨테이너로 격리한다.
+const ENV_ALLOW = [
+  "PATH", "PATHEXT", "HOME", "USERPROFILE", "HOMEDRIVE", "HOMEPATH", "APPDATA", "LOCALAPPDATA", "PROGRAMDATA",
+  "SystemRoot", "SYSTEMROOT", "windir", "ComSpec", "TEMP", "TMP", "TMPDIR", "LANG", "LC_ALL", "LC_CTYPE",
+  "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "XDG_STATE_HOME", "CLAUDE_CONFIG_DIR", "CODEX_HOME",
+  "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY", "http_proxy", "https_proxy", "no_proxy", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS",
+];
+export function childEnv(src: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+  const env: Record<string, string | undefined> = {};
+  const seen = new Set<string>();
+  for (const k of ENV_ALLOW) {
+    // Windows의 환경변수 이름은 대소문자를 가리지 않는다. 같은 변수를 두 번 넘기지 않는다.
+    const id = WIN ? k.toUpperCase() : k;
+    if (src[k] === undefined || seen.has(id)) continue;
+    seen.add(id);
+    env[k] = src[k];
+  }
+  return env as NodeJS.ProcessEnv; // Next 타입은 NODE_ENV를 필수로 둔다. 자식 CLI에는 넘기지 않는다.
+}
+
 function spawnCli(bin: string, args: string[], cwd: string, input: string, signal: AbortSignal): Promise<Proc> {
   return new Promise((resolve, reject) => {
-    const child = spawn(bin, WIN ? args.map(winArg) : args, { cwd, shell: WIN, detached: !WIN, windowsHide: true });
+    const child = spawn(bin, WIN ? args.map(winArg) : args, { cwd, env: childEnv(), shell: WIN, detached: !WIN, windowsHide: true });
     let stdout = "";
     let stderr = "";
     let killed: Proc["killed"];
@@ -151,9 +173,8 @@ const failed = (error: string) => ({ status: "failed" as const, error: maskSecre
 export async function startRun(req: ReviewRequest): Promise<void> {
   const adapter = ADAPTERS[req.model];
   const svc = await pbService();
-  const createdIssues: string[] = [];
 
-  const outcome = await runAttempt(svc, req.id, async (runId) => {
+  await runAttempt(svc, req.id, async (runId) => {
     if (!(await available(adapter.bin))) {
       return failed(`${adapter.label} 로컬 실행 환경을 찾을 수 없습니다. 이 서버에서 '${adapter.bin}' 명령이 인증된 상태로 실행되는지 확인한 뒤 재시도하세요.`);
     }
@@ -199,20 +220,13 @@ export async function startRun(req: ReviewRequest): Promise<void> {
       }
       if (ctrl.signal.aborted) return failed("실행이 취소되었습니다.");
 
-      // 이슈를 먼저 저장하고 완료로 전이한다. 그 사이 취소·재시도로 전이가 막히면 아래에서 지운다.
-      for (let i = 0; i < parsed.issues.length; i += 50) {
-        const batch = svc.createBatch();
-        for (const it of parsed.issues.slice(i, i + 50)) {
-          batch.collection("issues").create({
-            request: req.id, model: req.model, status: "unread",
-            file: it.file, line_start: it.line_start, line_end: it.line_end, severity: it.severity,
-            title: maskSecrets(it.title), body: maskSecrets(it.body), suggestion: maskSecrets(it.suggestion),
-          });
-        }
-        const results = await batch.send();
-        for (const r of results) if (r.body?.id) createdIssues.push(r.body.id);
-      }
-      return { status: "completed", summary: maskSecrets(parsed.summary), partial: parsed.dropped > 0, error: "" };
+      // 이슈는 runAttempt가 완료 전이와 같은 트랜잭션에서 게시한다.
+      const issues = parsed.issues.map((it) => ({
+        model: req.model, status: "unread",
+        file: it.file, line_start: it.line_start, line_end: it.line_end, severity: it.severity,
+        title: maskSecrets(it.title), body: maskSecrets(it.body), suggestion: maskSecrets(it.suggestion),
+      }));
+      return { status: "completed", summary: maskSecrets(parsed.summary), partial: parsed.dropped > 0, error: "", issues };
     } catch (e) {
       return failed(`실행 중 오류가 났습니다. ${tail(String(e), 300)}`);
     } finally {
@@ -221,13 +235,4 @@ export async function startRun(req: ReviewRequest): Promise<void> {
       await fs.rm(tmp, { recursive: true, force: true }).catch(() => {});
     }
   });
-
-  // 결과를 쓰지 못한 시도(취소·재시도로 밀려남)가 남긴 이슈는 지운다.
-  if (outcome === "superseded") {
-    for (let i = 0; i < createdIssues.length; i += 50) {
-      const batch = svc.createBatch();
-      for (const id of createdIssues.slice(i, i + 50)) batch.collection("issues").delete(id);
-      await batch.send().catch(() => {});
-    }
-  }
 }
