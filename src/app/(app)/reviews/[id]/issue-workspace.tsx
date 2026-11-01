@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useOptimistic, useRef, useState, useTransition } from "react";
 import { ChevronDown, MessageSquare } from "lucide-react";
 import { IssueStatusMark, InlineError, SeverityTag, btn, cx } from "@/components/ui";
+import { Prose } from "@/components/prose";
 import { ISSUE_LABEL, ISSUE_STATUSES, relative } from "@/lib/labels";
 import type { DiffLine } from "@/lib/diff";
 import type { Issue, IssueStatus } from "@/lib/types";
@@ -123,7 +124,7 @@ function IssueRow({ issue, model, now, open, onToggle }: { issue: IssueView; mod
 
       {open && (
         <div className="grid grid-cols-1 gap-4 px-4 pb-5 pt-1 sm:pl-[76px]">
-          {issue.body && <p className="max-w-[72ch] leading-[22px]">{issue.body}</p>}
+          {issue.body && <Prose text={issue.body} className="gap-2 leading-[22px]" />}
 
           {issue.excerpt.length > 0 && (
             <figure className="overflow-x-auto rounded-[6px] border border-border">
