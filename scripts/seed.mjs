@@ -1,4 +1,4 @@
-// 데모 데이터. 실행: npm run pb:seed  (PocketBase가 떠 있어야 한다)
+// 데모 데이터. 실행: pnpm pb:seed  (PocketBase가 떠 있어야 한다)
 // 모든 인물·저장소·커밋은 예시 데이터다. 운영 전에 지운다.
 import PocketBase from "pocketbase";
 import { randomUUID } from "node:crypto";
